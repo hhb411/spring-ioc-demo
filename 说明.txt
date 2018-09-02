@@ -1,0 +1,49 @@
+﻿【项目关系】
+maina->jara,jarb
+
+mainb->pomc->jara,jarb ——各项目都有properties文件时，各自使用PropertyPlaceholderConfigurer加载（可设定优先顺序）
+
+pomc其实不是一个pom，而是一个jar项目(相当于starter概念)，用一个xml引用两个jar的xml，以及depenency。
+
+jarb是boot项目，使用jdk8，凡是依赖它的项目，也都传递要求用jdk8。
+
+weba->jarc ——jarc不是boot项目, weba是boot项目，可以加载jarc中的xml配置或用@ComponentScan加载jarc中的类
+
+
+【记录】
+
+maina中
+jara.properties和maina.properties 的顺序有关，以前面的为准
+但貌似加载了前一个，后一个根本就不好使，就是说，前一个里如果没有该属性，后一个里的该属性也不会替补起作用
+
+jar内和jar外写context都能生效
+jar外写两个properties时，前面的覆盖后面的；如果前面的属性没写，那会报错
+
+
+已实现（全部非boot，jdk7）：
+xml配置bean没问题
+
+maina执行时，maina.properties覆盖jara.properties，且maina.properties可以空着。
+
+每个properties文件只要加载了，就都会进入context，然后jar内和jar外的程序都可以共享访问。
+
+maina -> jara,jarb ，用PropertyPlaceholderConfigurer没问题（但不能用<context:property-placeholder>），实现了每个jar里和main里各有一个properties，main覆盖jar的
+
+jarb改成了boot，使用jdk8——自身能运行，maina也能运行 （OK）
+
+mainb -> pomc -> jara,jarb
+pomc其实不是一个pom，而是一个jar项目(相当于starter概念)，用一个xml引用两个jar的xml，以及depenency （OK）
+有个问题：maina用jdk7就能运行，但mainb必须用jdk8，为什么？（jarb是boot,jdk8） 答：看错了，都必须用jdk8。
+
+
+【结论】
+1、只要一个项目使用了jdk8，那所有项目都得用8
+2、如果想使用spring.factories，那web项目和该jar项目都得用boot，其它jar可以不用boot。
+但由于boot要求jdk8，所以所有项目都得用8。
+
+那么，若用太行的starter，则需要用boot启动
+若用太行的dependencyManagement，则无需用boot
+
+所以，web项目用boot（dependencyManagement，太行starter），理由是简单。
+starter项目用dependencyManagement，也用spring.factories（如果外部是boot项目，就不用配扫描路径，外部是传统项目，则配扫描路径，扫一下autoconfiguration类即可）
+

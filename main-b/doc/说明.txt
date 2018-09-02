@@ -1,0 +1,25 @@
+﻿maina中
+jara.properties和maina.properties 的顺序有关，以前面的为准
+但貌似加载了前一个，后一个根本就不好使，就是说，前一个里如果没有该属性，后一个里的该属性也不会替补起作用
+
+jar内和jar外写context都能生效
+jar外写两个properties时，前面的覆盖后面的；如果前面的属性没写，那会报错
+
+
+已实现（全部非boot，jdk7）：
+xml配置bean没问题
+
+maina执行时，maina.properties覆盖jara.properties，且maina.properties可以空着。
+
+每个properties文件只要加载了，就都会进入context，然后jar内和jar外的程序都可以共享访问。
+
+maina -> jara,jarb ，用PropertyPlaceholderConfigurer没问题（但不能用<context:property-placeholder>），实现了每个jar里和main里各有一个properties，main覆盖jar的
+
+jarb改成了boot，使用jdk8——自身能运行，maina也能运行 （OK）
+
+
+TODO：
+mainb -> pomc -> jara
+mainb -> pomc -> jarb
+pomc可能不应是一个pom，而是一个jar项目(相当于starter概念)，用一个xml引用两个jar的xml
+

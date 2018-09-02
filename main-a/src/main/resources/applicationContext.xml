@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.abchina.dsf.maina"/>
+
+    <import resource="classpath*:applicationContext-jara.xml"/>
+    <import resource="classpath*:applicationContext-jarb.xml"/>
+
+
+    <!-- 多个properties文件中有相同属性的，后面的文件覆盖前面的文件 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="order" value="1" />
+        <property name="location" value="classpath:maina.properties" />
+    </bean>
+
+</beans>
